@@ -91,6 +91,7 @@ public class LoginActivity extends AppCompatActivity {
                             @Override
                             public void onErrorResponse(VolleyError error) {
                                 // TODO Auto-generated method stub
+                                //goes here when the login fails
                                 Log.d("ERROR","error => "+error.toString());
                             }
                         }
