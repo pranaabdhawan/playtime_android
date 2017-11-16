@@ -39,5 +39,5 @@
                 android:value="com.example.pranaab.playtime_android_app.ItemListActivity" />
         </activity>
     </application>
-
+    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>
