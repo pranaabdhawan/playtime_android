@@ -12,9 +12,11 @@ import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import com.bumptech.glide.Glide;
 import com.example.pranaab.playtime_android_app.dummy.DummyContent;
 import com.example.pranaab.playtime_android_app.dummy.Event;
 
@@ -83,16 +85,34 @@ public class ItemListActivity extends AppCompatActivity {
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_list_content, parent, false);
+                    .inflate(R.layout.card_event_layout, parent, false);
             return new ViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
-
-            holder.mIdView.setText(mValues.get(position).getId().toString());
+            holder.mIdView = position;
+            //holder.mImageView.setImageDrawable();
+            //holder.mIdView.setText(mValues.get(position).getId().toString());
             holder.mContentView.setText(mValues.get(position).getName());
+            String image_name;
+
+            image_name = "running";
+
+            switch (position){
+                case 0: image_name = "running"; break;
+                case 1: image_name = "badminton"; break;
+                case 2: image_name = "basketball"; break;
+                case 3: image_name = "biking"; break;
+                case 4: image_name = "hackathon"; break;
+                case 5: image_name = "gym"; break;
+                case 6: image_name = "debate"; break;
+
+            }
+
+            Glide.with(getApplicationContext()).load(getResources().getIdentifier(image_name, "drawable", getPackageName())).into(holder.mImageView);
+
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -123,14 +143,17 @@ public class ItemListActivity extends AppCompatActivity {
 
         public class ViewHolder extends RecyclerView.ViewHolder {
             public final View mView;
-            public final TextView mIdView;
+            public int mIdView;
             public final TextView mContentView;
+            public final ImageView mImageView;
             public Event mItem;
 
             public ViewHolder(View view) {
                 super(view);
                 mView = view;
-                mIdView = (TextView) view.findViewById(R.id.id);
+                mIdView = 0;
+                mImageView = (ImageView) view.findViewById(R.id.thumbnail);
+                //mIdView = (TextView) view.findViewById(R.id.id);
                 mContentView = (TextView) view.findViewById(R.id.content);
             }
 
