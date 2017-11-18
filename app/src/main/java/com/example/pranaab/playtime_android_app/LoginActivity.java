@@ -59,7 +59,6 @@ public class LoginActivity extends AppCompatActivity {
                 String loginstring = _emailText.getText().toString() + ":" + _passwordText.getText().toString();
                 Log.i("login str", loginstring);
                 final String basicAuthHeader = "Basic " + new String(Base64.encode(loginstring.getBytes(), Base64.DEFAULT));
-                Log.i("auth", basicAuthHeader);
 
                 String loginUrl = "https://playtime-core-api.herokuapp.com/api/auth/login/";
                 final StringRequest loginRequest = new StringRequest(Request.Method.POST, loginUrl,

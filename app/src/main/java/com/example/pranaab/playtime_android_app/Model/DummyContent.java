@@ -1,4 +1,4 @@
-package com.example.pranaab.playtime_android_app.dummy;
+package com.example.pranaab.playtime_android_app.Model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,16 +44,16 @@ public class DummyContent {
 
     private static void addItem(Event item) {
         EVENTS.add(item);
-        EVENT_MAP.put(item.getId().toString(), item);
+        EVENT_MAP.put(item.getUId().toString(), item);
     }
 
-    private static Event createDummyEvent(int position, String name, String location, String time, int max, int joined ) {
-        Event event = new Event(position);
+    private static Event createDummyEvent(Integer position, String name, String location, String time, int max, int joined ) {
+        Event event = new Event(position.toString());
         event.setName(name);
         event.setLocation(location);
-        event.setMax_members(max);
+        event.setMax_subscribers(max);
         event.setNum_joined_members(joined);
-        event.setTime(time);
+        event.setStart_time(time);
         event.setDetails();
         return event;
 

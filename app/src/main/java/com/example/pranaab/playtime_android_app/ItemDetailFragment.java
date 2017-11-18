@@ -9,8 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.pranaab.playtime_android_app.dummy.DummyContent;
-import com.example.pranaab.playtime_android_app.dummy.Event;
+import com.example.pranaab.playtime_android_app.Model.DummyContent;
+import com.example.pranaab.playtime_android_app.Model.Event;
+import com.example.pranaab.playtime_android_app.Model.EventRepository;
 
 /**
  * A fragment representing a single Item detail screen.
@@ -43,7 +44,7 @@ public class ItemDetailFragment extends Fragment {
 
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             // TODO: Make a loader when making I/O calls
-            mItem = DummyContent.EVENT_MAP.get(getArguments().getString(ARG_ITEM_ID));
+            mItem = EventRepository.events.get(Integer.valueOf(getArguments().getString(ARG_ITEM_ID)));
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
