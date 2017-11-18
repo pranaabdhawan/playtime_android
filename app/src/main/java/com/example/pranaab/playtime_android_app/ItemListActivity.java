@@ -109,7 +109,7 @@ public class ItemListActivity extends AppCompatActivity {
                 // Your code to refresh the list here.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
-                Log.i("Refreshing this shit", "fresh");
+                Log.i("Refreshing", "stay fresh");
                 eventRepository.fetch_Events_Async(pref);
                 mSwipeRefreshLayout.setRefreshing(false);
             }
