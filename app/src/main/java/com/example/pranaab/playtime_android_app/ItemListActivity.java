@@ -29,15 +29,24 @@ import com.bumptech.glide.Glide;
 import com.example.pranaab.playtime_android_app.Model.DummyContent;
 import com.example.pranaab.playtime_android_app.Model.Event;
 import com.example.pranaab.playtime_android_app.Model.EventRepository;
+import com.example.pranaab.playtime_android_app.WebSocket.ChatWebSocketListener;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import okhttp3.HttpUrl;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
+import okio.ByteString;
 
 import java.io.Console;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
 
 /**
  * An activity representing a list of Items. This activity
@@ -79,6 +88,7 @@ public class ItemListActivity extends AppCompatActivity {
             }
         });
 
+        /*
         View recyclerView = findViewById(R.id.item_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
@@ -101,13 +111,27 @@ public class ItemListActivity extends AppCompatActivity {
         }
 
         Log.i("ACTIVE","i");
+        */
+
+        OkHttpClient client = new OkHttpClient.Builder().pingInterval(10, TimeUnit.SECONDS).build();
+        /*
+        HttpUrl url_string = HttpUrl.parse("ws://playtime-chat.herokuapp.com/connect");
+        HttpUrl.Builder urlBuilder = HttpUrl.parse("ws://playtime-chat.herokuapp.com/connect").newBuilder();
+        urlBuilder.addQueryParameter("user_uid","31a06a13-8126-4720-8d8f-ae17930282c9");*/
+        okhttp3.Request request = new okhttp3.Request.Builder().url("ws://playtime-chat.herokuapp.com/connect?user_uid=31a06a13-8126-4720-8d8f-ae17930282c9").build();
+        ChatWebSocketListener listener = new ChatWebSocketListener();
+        WebSocket ws = client.newWebSocket(request, listener);
+
+        Integer milli = client.pingIntervalMillis();
+        Log.i("Webscoket", milli.toString());
+
+        client.dispatcher().executorService().shutdown();
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         events_adapter = new SimpleItemRecyclerViewAdapter(EventRepository.events);
         recyclerView.setAdapter(events_adapter);
         //recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(eventRepository.getEvents()));
-
     }
 
     public class SimpleItemRecyclerViewAdapter

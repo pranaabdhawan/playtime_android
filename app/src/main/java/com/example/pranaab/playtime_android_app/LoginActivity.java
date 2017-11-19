@@ -54,6 +54,7 @@ public class LoginActivity extends AppCompatActivity {
         _signupLink = (TextView) findViewById(R.id.link_signup);
         _context = getApplicationContext();
 
+
         //Set login on click listener
         _loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,6 +122,9 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+
+
     }
 
 
