@@ -92,9 +92,6 @@ public class ItemListActivity extends AppCompatActivity {
         eventRepository.fetch_Events_Async(pref);
 
 
-
-
-
         if (findViewById(R.id.item_detail_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-w900dp).
@@ -184,6 +181,7 @@ public class ItemListActivity extends AppCompatActivity {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, ItemDetailActivity.class);
                         intent.putExtra(ItemDetailFragment.ARG_ITEM_ID, Integer.toString(position));
+                        intent.putExtra("uuid", mValues.get(position).getUId());
 
                         context.startActivity(intent);
                     }

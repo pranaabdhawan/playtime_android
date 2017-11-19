@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.pranaab.playtime_android_app.Model.DummyContent;
@@ -61,7 +63,17 @@ public class ItemDetailFragment extends Fragment {
 
         // Show the dummy content as text in a TextView.
         if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.item_detail)).setText(mItem.getDetails());
+            //((TextView) rootView.findViewById(R.id.item_detail)).setText(mItem.getDetails());
+            //((TextView) rootView.findViewById(R.id.item_detail_details_dynamic)).setText(mItem.getName());
+//            ((TextView) rootView.findViewById(R.id.item_detail_name)).setText(mItem.getName());
+            ((TextView) rootView.findViewById(R.id.item_detail_time)).setText("Time: " + mItem.getStart_time() + " - " + mItem.getEnd_time());
+            ((TextView) rootView.findViewById(R.id.item_detail_location)).setText("Location: " + mItem.getLocation());
+            ((TextView) rootView.findViewById(R.id.item_detail_capacity)).setText("Number of People: " + mItem.getNum_joined_members() + "/" + mItem.getMax_subscribers());
+            ((TextView) rootView.findViewById(R.id.item_detail_spots_left)).setText(Integer.toString(mItem.getMax_subscribers() - mItem.getNum_joined_members()) + " spots left!");
+            ProgressBar simpleProgressBar = (ProgressBar) rootView.findViewById(R.id.indeterminateBar);
+            double progress = ((double)mItem.getNum_joined_members()/mItem.getMax_subscribers()) * 100;
+            Log.i("progress", Double.toString(progress));
+            simpleProgressBar.setProgress((int) progress);
         }
 
         return rootView;
