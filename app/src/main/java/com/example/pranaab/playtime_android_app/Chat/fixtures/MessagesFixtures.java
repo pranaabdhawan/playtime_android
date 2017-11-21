@@ -69,6 +69,20 @@ public final class MessagesFixtures extends FixturesData {
                 true);
     }
 
+    private static User getAwayUser(){
+        return new User("1", names.get(1), avatars.get(1), true);
+    }
+
+    private static User getOwnerUser(){
+        return new User("0", names.get(0), avatars.get(0), true);
+    }
+
+    public static Message getReceiveTextMessage(String text){
+        return new Message(getRandomId(), getAwayUser(), text);
+    }
+    public static Message getSendTextMessage(String text){
+        return new Message(getRandomId(), getOwnerUser(), text);
+    }
     //ADDED
     public static Message getMessageFromText(String text){
         return new Message(getRandomId(), getUser(), text);

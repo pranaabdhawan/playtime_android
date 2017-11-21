@@ -54,7 +54,7 @@ public class DefaultMessagesActivity extends ChatActivity
     public boolean onSubmit(CharSequence input) {
         webSocketListener.send_chat_message(input.toString());
         super.messagesAdapter.addToStart(
-                MessagesFixtures.getTextMessage(input.toString()), true);
+                MessagesFixtures.getSendTextMessage(input.toString()),true);
         return true;
     }
 
@@ -69,7 +69,7 @@ public class DefaultMessagesActivity extends ChatActivity
         //messages.add(MessagesFixtures.getMessageFromText(text));
         Log.i("ACTIVITY", "Here");
         //Log.i("ACTIVITY", messages.get(0).getText());
-        super.messagesAdapter.addToStart(MessagesFixtures.getMessageFromText(text),true);
+        super.messagesAdapter.addToStart(MessagesFixtures.getReceiveTextMessage(text),true);
     }
 
     private void initAdapter() {
