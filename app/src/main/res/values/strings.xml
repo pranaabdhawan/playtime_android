@@ -13,6 +13,8 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
-    <string name="title_item_list">Items</string>
-    <string name="title_item_detail">Item Detail</string>
+    <string name="title_item_list">Events Around You</string>
+    <string name="title_item_detail">Event Detail</string>
+    <string name="hint_enter_a_message">Type a message…</string>
+    <string name="title_activity_chat">ChatActivity</string>
 </resources>

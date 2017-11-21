@@ -1,9 +1,17 @@
 package com.example.pranaab.playtime_android_app.WebSocket;
 
+import android.app.IntentService;
+import android.os.Parcelable;
 import android.util.Log;
+
+import com.example.pranaab.playtime_android_app.Chat.ChatActivity;
+import com.example.pranaab.playtime_android_app.Chat.DefaultMessagesActivity;
+import com.example.pranaab.playtime_android_app.Services.WebsocketService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.Serializable;
 
 import okhttp3.Response;
 import okhttp3.WebSocket;
@@ -15,31 +23,34 @@ import okio.ByteString;
  * Created by pranaab on 2017-11-18.
  */
 
-
-    public final class ChatWebSocketListener extends WebSocketListener {
+    public class ChatWebSocketListener extends WebSocketListener {
         private static final int NORMAL_CLOSURE_STATUS = 1000;
 
         private String event_uid; // Event uid of the chat
 
+        private WebsocketService service;
+
+        private String user_uid;
+
+        private WebSocket webSocket;
+
+        public DefaultMessagesActivity chatActivity;
+
+        public ChatWebSocketListener(WebsocketService service, String user_uid){
+            this.user_uid = user_uid;
+            this.service = service;
+        }
+
+        public String cur_message;
+
+
+
         @Override
         public void onOpen(WebSocket webSocket, Response response) {
-            /*try {
-                JSONObject message = new JSONObject();
-                message.put("type", "CHAT_MESSAGE");
-                message.put("content","Hello, it's Pranaab");
-                message.put("event_uid","123");
-                message.put("sender","31a06a13-8126-4720-8d8f-ae17930282c9");
-                String message_string = message.toString();
-                webSocket.send(message_string);
-
-            }catch(JSONException e){
-
-            }*/
-            //webSocket.send("Hello, it's Pranaab !");
-            //webSocket.send("What's up ?");
-            //webSocket.send(ByteString.decodeHex("deadbeef"));
-            //webSocket.close(NORMAL_CLOSURE_STATUS, "Goodbye !");
+            this.webSocket = webSocket;
+            Log.i("WebSocketListener", "Websocket opeened");
         }
+
         @Override
         public void onMessage(WebSocket webSocket, String text) {
             Log.i("WebSocketListener","Receiving : " + text);
@@ -54,8 +65,18 @@ import okio.ByteString;
                     case "EVENT_ACCEPT":        Log.i("WebSocketListener","Event Accept type : " + type);
                                                 break;
                     case "CHAT_MESSAGE":        Log.i("WebSocketListener","Chat message type : " + type);
-                                                send_chat_message(webSocket,"Hello chat people!");
-                                                send_chat_message(webSocket,"How are you today?");
+                                                String content = message.getString("content");
+                                                this.cur_message = content;
+                                                chatActivity.runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        chatActivity.showReceivedText(cur_message);
+                                                        //stuff that updates ui
+
+                                                    }
+                                                });
+                                                //send_chat_message("Hello chat people!");
+                                                //send_chat_message("How are you today?");
                                                 break;
                     default: break;
                 }
@@ -64,6 +85,7 @@ import okio.ByteString;
             }
 
         }
+
         @Override
         public void onMessage(WebSocket webSocket, ByteString bytes) {
             Log.i("WebSocketListener","Receiving bytes : " + bytes.hex());
@@ -79,7 +101,7 @@ import okio.ByteString;
             Log.i("WebSocketListener","Error : " + t.getMessage());
         }
 
-        private void send_chat_message(WebSocket webSocket, String text){
+        public void send_chat_message(String text){
             try {
                 JSONObject message = new JSONObject();
                 message.put("type", "CHAT_MESSAGE");
@@ -87,7 +109,7 @@ import okio.ByteString;
                 message.put("event_uid",this.event_uid);
                 message.put("sender","31a06a13-8126-4720-8d8f-ae17930282c9");
                 String message_string = message.toString();
-                webSocket.send(message_string);
+                this.webSocket.send(message_string);
             }catch(JSONException e){
 
             }
@@ -103,6 +125,7 @@ import okio.ByteString;
                 String message_string = message.toString();
                 webSocket.send(message_string);
                 Log.i("WebSocketListener","Invitation Accepted : ");
+                this.service.beginChat();
             }catch(JSONException e){
 
             }

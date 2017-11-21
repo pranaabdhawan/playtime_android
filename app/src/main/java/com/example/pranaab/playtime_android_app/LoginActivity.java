@@ -22,6 +22,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.pranaab.playtime_android_app.Chat.DefaultMessagesActivity;
+import com.example.pranaab.playtime_android_app.Services.WebsocketService;
 
 import org.json.JSONObject;
 
@@ -76,9 +78,13 @@ public class LoginActivity extends AppCompatActivity {
                                 try {
                                     JSONObject jsonObject = new JSONObject(response);
                                     token = jsonObject.getString("token");
+
+                                    String user_uid = jsonObject.getString("user_uid");
+                                    Log.i("LoginActivity", user_uid);
                                     SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
                                     SharedPreferences.Editor editor = pref.edit();
                                     editor.putString("currUser", token);
+                                    editor.putString("user_uid","31a06a13-8126-4720-8d8f-ae17930282c9");
                                     editor.commit();
                                     //String retrievedToken = pref.getString("currUser", null);
 
@@ -86,6 +92,9 @@ public class LoginActivity extends AppCompatActivity {
                                 catch(Exception e){
 
                                 }
+
+
+                                //Starting the activity
                                 Intent intent = new Intent(getApplicationContext(), ItemListActivity.class);
                                 startActivity(intent);
                             }

@@ -1,8 +1,10 @@
 package com.example.pranaab.playtime_android_app;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -27,9 +29,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.bumptech.glide.Glide;
+import com.example.pranaab.playtime_android_app.Chat.DefaultMessagesActivity;
 import com.example.pranaab.playtime_android_app.Model.DummyContent;
 import com.example.pranaab.playtime_android_app.Model.Event;
 import com.example.pranaab.playtime_android_app.Model.EventRepository;
+import com.example.pranaab.playtime_android_app.Services.WebsocketService;
 import com.example.pranaab.playtime_android_app.WebSocket.ChatWebSocketListener;
 
 import org.json.JSONArray;
@@ -69,6 +73,26 @@ public class ItemListActivity extends AppCompatActivity {
 
     private RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> events_adapter;
 
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle bundle = intent.getExtras();
+            if(bundle!=null){
+                //See if something needs to be done
+            }
+            Log.i("ServiceReceiver", "Got Service Receiver Intent");
+            Intent stopIntent = new Intent(getApplicationContext(), WebsocketService.class);
+            stopService(stopIntent);
+
+
+            Intent activity_intent = new Intent(getApplicationContext(), DefaultMessagesActivity.class);
+            startActivity(activity_intent);
+            //DefaultMessagesActivity.open(getApplicationContext());
+
+        }
+    };
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,7 +115,7 @@ public class ItemListActivity extends AppCompatActivity {
             }
         });
 
-        /*
+
         View recyclerView = findViewById(R.id.item_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
@@ -126,13 +150,12 @@ public class ItemListActivity extends AppCompatActivity {
         });
 
         Log.i("ACTIVE","i");
-        */
 
-        OkHttpClient client = new OkHttpClient.Builder().pingInterval(10, TimeUnit.SECONDS).build();
+
+        //DefaultMessagesActivity.open(this);
+
         /*
-        HttpUrl url_string = HttpUrl.parse("ws://playtime-chat.herokuapp.com/connect");
-        HttpUrl.Builder urlBuilder = HttpUrl.parse("ws://playtime-chat.herokuapp.com/connect").newBuilder();
-        urlBuilder.addQueryParameter("user_uid","31a06a13-8126-4720-8d8f-ae17930282c9");*/
+        OkHttpClient client = new OkHttpClient.Builder().pingInterval(10, TimeUnit.SECONDS).build();
         okhttp3.Request request = new okhttp3.Request.Builder().url("ws://playtime-chat.herokuapp.com/connect?user_uid=31a06a13-8126-4720-8d8f-ae17930282c9").build();
         ChatWebSocketListener listener = new ChatWebSocketListener();
         WebSocket ws = client.newWebSocket(request, listener);
@@ -140,7 +163,13 @@ public class ItemListActivity extends AppCompatActivity {
         Integer milli = client.pingIntervalMillis();
         Log.i("Webscoket", milli.toString());
 
-        client.dispatcher().executorService().shutdown();
+        client.dispatcher().executorService().shutdown();*/
+
+        //Starting the service
+        registerReceiver(this.receiver, new IntentFilter(
+                WebsocketService.CHAT_NOTIFICATION));
+        Intent service_intent = new Intent(this, WebsocketService.class);
+        startService(service_intent);
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
@@ -172,23 +201,7 @@ public class ItemListActivity extends AppCompatActivity {
             //holder.mImageView.setImageDrawable();
             //holder.mIdView.setText(mValues.get(position).getId().toString());
             holder.mContentView.setText(mValues.get(position).getName());
-            String image_name;
 
-            /*
-            image_name = "running";
-
-            switch (position){
-                case 0: image_name = "running"; break;
-                case 1: image_name = "badminton"; break;
-                case 2: image_name = "basketball"; break;
-                case 3: image_name = "biking"; break;
-                case 4: image_name = "hackathon"; break;
-                case 5: image_name = "gym"; break;
-                case 6: image_name = "debate"; break;
-
-            }
-            Log.i("HERE","i");
-                */
             Log.i("HERE","i");
             Glide.with(getApplicationContext()).load(mValues.get(position).getThumbnail_link()).into(holder.mImageView);
 
@@ -241,5 +254,7 @@ public class ItemListActivity extends AppCompatActivity {
                 return super.toString() + " '" + mContentView.getText() + "'";
             }
         }
+
+
     }
 }
