@@ -126,9 +126,6 @@ public class ItemListActivity extends AppCompatActivity {
         eventRepository.fetch_Events_Async(pref);
 
 
-
-
-
         if (findViewById(R.id.item_detail_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-w900dp).
@@ -218,11 +215,61 @@ public class ItemListActivity extends AppCompatActivity {
                                 .replace(R.id.item_detail_container, fragment)
                                 .commit();
                     } else {
-                        Context context = v.getContext();
-                        Intent intent = new Intent(context, ItemDetailActivity.class);
+                        final Context context = v.getContext();
+                        final Intent intent = new Intent(context, ItemDetailActivity.class);
                         intent.putExtra(ItemDetailFragment.ARG_ITEM_ID, Integer.toString(position));
+                        intent.putExtra("event_id", mValues.get(position).getUId());
+                        final String eventid = mValues.get(position).getUId();
 
-                        context.startActivity(intent);
+                        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
+                        final String tokenHeader = "Token " + pref.getString("currUser", null);
+
+                        String subscriptionUrl = "https://playtime-core-api.herokuapp.com/api/subscriptions/";
+                        final StringRequest subscriptionRequest = new StringRequest(Request.Method.GET, subscriptionUrl,
+                                new Response.Listener<String>()
+                                {
+                                    @Override
+                                    public void onResponse(String response) {
+                                        // response
+                                        Log.d("Response", response);
+                                        String subButtonResponse = "subscribe";
+                                        try {
+                                            JSONArray jsonarray = new JSONArray(response);
+                                            for (int i = 0; i < jsonarray.length(); i++) {
+                                                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                                                if(jsonobject.getString("event").equals(eventid)){
+                                                    subButtonResponse = "unsubscribe";
+                                                    intent.putExtra("unSubEvent", jsonobject.getString("uid"));
+                                                    break;
+                                                }
+                                            }
+                                            intent.putExtra("subscribeButton", subButtonResponse);
+                                            context.startActivity(intent);
+                                        }
+                                        catch(Exception e){
+                                            Log.i("Excpetion Raised", e.getMessage());
+                                        }
+                                    }
+                                },
+                                new Response.ErrorListener()
+                                {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+                                        // TODO Auto-generated method stub
+                                        //goes here when the login fails
+                                        context.startActivity(intent); //just go to it anyway
+                                        Log.d("ERROR","error => "+error.toString());
+                                    }
+                                }
+                        ) {
+                            @Override
+                            public Map<String, String> getHeaders() throws AuthFailureError {
+                                Map<String, String>  params = new HashMap<>();
+                                params.put("Authorization", tokenHeader);
+                                return params;
+                            }
+                        };
+                        RequestQueueSingleton.getInstance(getApplicationContext()).addToRequestQueue(subscriptionRequest);
                     }
                 }
             });

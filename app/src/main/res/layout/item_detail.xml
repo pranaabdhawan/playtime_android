@@ -1,9 +1,120 @@
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/item_detail"
-    style="?android:attr/textAppearanceLarge"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp"
-    android:textIsSelectable="true"
-    tools:context="com.example.pranaab.playtime_android_app.ItemDetailFragment" />
+    android:layout_height="wrap_content"
+    android:paddingTop="35dp"
+    android:paddingLeft="24dp"
+    android:paddingRight="24dp">
+
+    <!--<TextView xmlns:android="http://schemas.android.com/apk/res/android"-->
+        <!--xmlns:tools="http://schemas.android.com/tools"-->
+        <!--android:id="@+id/item_detail_name"-->
+        <!--android:textSize="30dp"-->
+        <!--android:textStyle="bold"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:padding="10dp"-->
+        <!--android:textIsSelectable="true"-->
+        <!--tools:context="com.example.pranaab.playtime_android_app.ItemDetailFragment" />-->
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_vertical|center_horizontal">
+    <ImageView
+        android:id="@+id/timeimage"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/clock" />
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/item_detail_time"
+        android:textSize="30dp"
+        android:textColor="#000000"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_marginLeft="15dp"
+        android:textIsSelectable="true"
+        tools:context="com.example.pranaab.playtime_android_app.ItemDetailFragment" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_vertical|center_horizontal">
+        <ImageView
+            android:id="@+id/locationimage"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/location" />
+
+        <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/item_detail_location"
+            android:textSize="30dp"
+            android:textColor="#000000"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_marginLeft="15dp"
+            android:textIsSelectable="true"
+            tools:context="com.example.pranaab.playtime_android_app.ItemDetailFragment" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_vertical|center_horizontal">
+        <ImageView
+            android:id="@+id/groupimage"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/group" />
+
+        <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/item_detail_capacity"
+            android:textSize="30dp"
+            android:textColor="#000000"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_marginLeft="15dp"
+            android:textIsSelectable="true"
+            tools:context="com.example.pranaab.playtime_android_app.ItemDetailFragment" />
+
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/indeterminateBar"
+        android:layout_width="match_parent"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:progressTint="#4c51a9"
+        android:progressBackgroundTint="#a6a6a6"
+        android:padding="15dp"
+        android:layout_height="wrap_content"/>
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/item_detail_spots_left"
+        android:textSize="30dp"
+        android:textColor="#000000"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        android:gravity="center_horizontal"
+        android:textIsSelectable="true"
+        tools:context="com.example.pranaab.playtime_android_app.ItemDetailFragment" />
+
+</LinearLayout>

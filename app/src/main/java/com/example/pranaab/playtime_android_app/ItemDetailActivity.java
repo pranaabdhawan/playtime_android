@@ -1,15 +1,37 @@
 package com.example.pranaab.playtime_android_app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.Toast;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
+
+import es.dmoral.toasty.Toasty;
 
 /**
  * An activity representing a single Item detail screen. This
@@ -24,6 +46,9 @@ public class ItemDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
+        final Button _subscribeButton = (Button) findViewById(R.id.btn_event_subscribe);
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
+        final String tokenHeader = "Token " + pref.getString("currUser", null);
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -34,6 +59,99 @@ public class ItemDetailActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+        if(getIntent().getStringExtra("subscribeButton").equals("subscribe")){
+            _subscribeButton.setText("Subscribe");
+            _subscribeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v){
+                    String postSubscriptionsURL = "https://playtime-core-api.herokuapp.com/api/subscriptions/";
+                    HashMap<String, String> params = new HashMap<String, String>();
+                    params.put("event", getIntent().getStringExtra("event_id"));
+
+                    JsonObjectRequest req = new JsonObjectRequest(postSubscriptionsURL, new JSONObject(params),
+                            new Response.Listener<JSONObject>() {
+                                @Override
+                                public void onResponse(JSONObject response) {
+                                    try {
+                                        Toasty.success(getApplicationContext(), "Successful Subscription!", Toast.LENGTH_SHORT, true).show();
+                                        VolleyLog.v("Subscription Response:%n %s", response.toString(4));
+                                        Intent intent = new Intent(getApplicationContext(), ItemListActivity.class);
+                                        startActivity(intent);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toasty.error(getApplicationContext(), "Subscription Error!", Toast.LENGTH_SHORT, true).show();
+                            VolleyLog.e("Error: ", error.getMessage());
+                        }
+                    }) {
+                        @Override
+                        public Map<String, String> getHeaders() throws AuthFailureError {
+                            HashMap<String, String> headers = new HashMap<String, String>();
+                            headers.put("Authorization", tokenHeader);
+                            headers.put("Content-Type", "application/json");
+                            return headers;
+                        }
+                    };
+                    RequestQueueSingleton.getInstance(getApplicationContext()).addToRequestQueue(req);
+                }
+            });
+        }
+        else{
+            _subscribeButton.setText("Unsubscribe");
+            _subscribeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v){
+                    String subscriptionsURL = "https://playtime-core-api.herokuapp.com/api/subscriptions/";
+                    subscriptionsURL += getIntent().getStringExtra("unSubEvent") + "/";
+
+                    Log.i("unsub url", subscriptionsURL);
+
+                    final StringRequest subscriptionRequest = new StringRequest(Request.Method.DELETE, subscriptionsURL,
+                            new Response.Listener<String>()
+                            {
+                                @Override
+                                public void onResponse(String response) {
+                                    // response
+                                    Log.d("Response", response);
+                                    String subButtonResponse = "subscribe";
+                                    try {
+                                        Toasty.success(getApplicationContext(), "Successfully Unsubscribed!", Toast.LENGTH_SHORT, true).show();
+                                        Log.d("Unsubscribe Response", response);
+                                        Intent intent = new Intent(getApplicationContext(), ItemListActivity.class);
+                                        startActivity(intent);
+                                    }
+                                    catch(Exception e){
+                                        Log.i("Excpetion Raised", e.getMessage());
+                                    }
+                                }
+                            },
+                            new Response.ErrorListener()
+                            {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    // TODO Auto-generated method stub
+                                    //goes here when the request fails
+                                    Toasty.error(getApplicationContext(), "Unsubscription Error!", Toast.LENGTH_SHORT, true).show();
+                                    Log.d("Unsubscribe Error","error => "+error.toString());
+                                }
+                            }
+                    ) {
+                        @Override
+                        public Map<String, String> getHeaders() throws AuthFailureError {
+                            Map<String, String>  params = new HashMap<>();
+                            params.put("Authorization", tokenHeader);
+                            return params;
+                        }
+                    };
+                    RequestQueueSingleton.getInstance(getApplicationContext()).addToRequestQueue(subscriptionRequest);
+                }
+            });
+        }
 
         // Show the Up button in the action bar.
         ActionBar actionBar = getSupportActionBar();
@@ -62,6 +180,48 @@ public class ItemDetailActivity extends AppCompatActivity {
                     .add(R.id.item_detail_container, fragment)
                     .commit();
         }
+
+
+        String eventsUrl = "https://playtime-core-api.herokuapp.com/api/events/";
+        eventsUrl += getIntent().getStringExtra("event_id") + "/";
+
+        final StringRequest eventRequest = new StringRequest(Request.Method.GET, eventsUrl,
+                new Response.Listener<String>()
+                {
+                    @Override
+                    public void onResponse(String response) {
+                        // response
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            if(jsonObject.getString("max_subscribers").equals(jsonObject.getString("subscriber_count")) && getIntent().getStringExtra("subscribeButton").equals("subscribe")){
+                                _subscribeButton.setEnabled(false);
+                            }
+                        }
+                        catch(Exception e){
+                            Log.i("Exception Raised", e.getMessage());
+                        }
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO Auto-generated method stub
+                        //goes here when the request fails
+                        Log.d("Specific Event Error","error => "+error.toString());
+                    }
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String>  params = new HashMap<>();
+                params.put("Authorization", tokenHeader);
+                return params;
+            }
+        };
+        RequestQueueSingleton.getInstance(getApplicationContext()).addToRequestQueue(eventRequest);
+
+
     }
 
     @Override
