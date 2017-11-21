@@ -107,7 +107,7 @@ import okio.ByteString;
                 message.put("type", "CHAT_MESSAGE");
                 message.put("content",text);
                 message.put("event_uid",this.event_uid);
-                message.put("sender","31a06a13-8126-4720-8d8f-ae17930282c9");
+                message.put("sender",this.user_uid);
                 String message_string = message.toString();
                 this.webSocket.send(message_string);
             }catch(JSONException e){

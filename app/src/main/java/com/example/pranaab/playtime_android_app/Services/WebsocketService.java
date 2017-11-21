@@ -63,7 +63,7 @@ public class WebsocketService extends IntentService {
 
         String user_uid = intent.getStringExtra("user_uid");
         OkHttpClient client = new OkHttpClient.Builder().pingInterval(10, TimeUnit.SECONDS).build();
-        okhttp3.Request request = new okhttp3.Request.Builder().url("ws://playtime-chat.herokuapp.com/connect?user_uid=" + "31a06a13-8126-4720-8d8f-ae17930282c9").build();
+        okhttp3.Request request = new okhttp3.Request.Builder().url("ws://playtime-chat.herokuapp.com/connect?user_uid=" + user_uid).build();
         ChatWebSocketListener listener = SingletonWebSocketListener.get_Instance(this, user_uid);
         WebSocket ws = client.newWebSocket(request, listener);
 

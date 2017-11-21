@@ -73,24 +73,16 @@ public class ItemListActivity extends AppCompatActivity {
 
     private RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> events_adapter;
 
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Bundle bundle = intent.getExtras();
-            if(bundle!=null){
-                //See if something needs to be done
-            }
-            Log.i("ServiceReceiver", "Got Service Receiver Intent");
-            Intent stopIntent = new Intent(getApplicationContext(), WebsocketService.class);
-            stopService(stopIntent);
+    private BroadcastReceiver receiver;
 
-
-            Intent activity_intent = new Intent(getApplicationContext(), DefaultMessagesActivity.class);
-            startActivity(activity_intent);
-            //DefaultMessagesActivity.open(getApplicationContext());
-
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        if(receiver != null) {
+            Log.i("RECEIVER", "UNREGISTER");
+            unregisterReceiver(receiver);
         }
-    };
+    }
 
 
     @Override
@@ -102,7 +94,7 @@ public class ItemListActivity extends AppCompatActivity {
         final SwipeRefreshLayout mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
 
         setSupportActionBar(toolbar);
-        toolbar.setTitle("Events Near You");
+        toolbar.setTitle("Events Around You");
 
 
 
@@ -162,11 +154,31 @@ public class ItemListActivity extends AppCompatActivity {
 
         client.dispatcher().executorService().shutdown();*/
 
-        //Starting the service
-        registerReceiver(this.receiver, new IntentFilter(
-                WebsocketService.CHAT_NOTIFICATION));
-        Intent service_intent = new Intent(this, WebsocketService.class);
-        startService(service_intent);
+        //Attaching the receiver
+        if(receiver == null) {
+            Log.i("ITEMLIST", "Setting new receiver");
+            receiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    Bundle bundle = intent.getExtras();
+                    if(bundle!=null){
+                        //See if something needs to be done
+                    }
+                    Log.i("ServiceReceiver", "Got Service Receiver Intent");
+                    Intent stopIntent = new Intent(getApplicationContext(), WebsocketService.class);
+                    stopService(stopIntent);
+
+
+                    Intent activity_intent = new Intent(getApplicationContext(), DefaultMessagesActivity.class);
+                    startActivity(activity_intent);
+                    //DefaultMessagesActivity.open(getApplicationContext());
+
+                }
+            };
+            registerReceiver(this.receiver, new IntentFilter(
+                    WebsocketService.CHAT_NOTIFICATION));
+        }
+
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {

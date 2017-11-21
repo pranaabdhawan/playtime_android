@@ -45,6 +45,7 @@ public class LoginActivity extends AppCompatActivity {
 
     //private RequestQueue requestQueue;
     private String token;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,28 +76,36 @@ public class LoginActivity extends AppCompatActivity {
                             public void onResponse(String response) {
                                 // response
                                 Log.d("Response", response);
+                                String user_uid;
                                 try {
                                     JSONObject jsonObject = new JSONObject(response);
                                     token = jsonObject.getString("token");
 
-                                    String user_uid = jsonObject.getString("user_uid");
-                                    Log.i("LoginActivity", user_uid);
+                                    //String user_uid = jsonObject.getString("user_uid");
+                                   //pr Log.i("LoginActivity", user_uid);
+                                    JSONObject user = jsonObject.getJSONObject("user");
+                                    user_uid = user.getString("uid");
+                                    String user_name = user.getString("username");
                                     SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
                                     SharedPreferences.Editor editor = pref.edit();
                                     editor.putString("currUser", token);
-                                    editor.putString("user_uid","31a06a13-8126-4720-8d8f-ae17930282c9");
+                                    editor.putString("user_uid",user_uid);
+                                    editor.putString("user_name",user_name);
                                     editor.commit();
                                     //String retrievedToken = pref.getString("currUser", null);
 
+                                    // Starting the service
+                                    Intent service_intent = new Intent(getApplicationContext(), WebsocketService.class);
+                                    service_intent.putExtra("user_uid", user_uid);
+                                    startService(service_intent);
+
+                                    //Starting the activity
+                                    Intent intent = new Intent(getApplicationContext(), ItemListActivity.class);
+                                    startActivity(intent);
                                 }
                                 catch(Exception e){
 
                                 }
-
-
-                                //Starting the activity
-                                Intent intent = new Intent(getApplicationContext(), ItemListActivity.class);
-                                startActivity(intent);
                             }
                         },
                         new Response.ErrorListener()
@@ -135,6 +144,8 @@ public class LoginActivity extends AppCompatActivity {
 
 
     }
+
+
 
 
 }

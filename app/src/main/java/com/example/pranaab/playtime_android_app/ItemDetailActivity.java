@@ -41,6 +41,10 @@ import es.dmoral.toasty.Toasty;
  */
 public class ItemDetailActivity extends AppCompatActivity {
 
+    private int subscriber_count;
+
+    private int max_count;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,8 +80,11 @@ public class ItemDetailActivity extends AppCompatActivity {
                                     try {
                                         Toasty.success(getApplicationContext(), "Successful Subscription!", Toast.LENGTH_SHORT, true).show();
                                         VolleyLog.v("Subscription Response:%n %s", response.toString(4));
-                                        Intent intent = new Intent(getApplicationContext(), ItemListActivity.class);
-                                        startActivity(intent);
+
+                                            //Log.i("HEREEEEEE", subscriber_count.t);
+                                            //Intent intent = new Intent(getApplicationContext(), ItemListActivity.class);
+                                            //startActivity(intent);
+
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
@@ -193,6 +200,8 @@ public class ItemDetailActivity extends AppCompatActivity {
                         // response
                         try {
                             JSONObject jsonObject = new JSONObject(response);
+                            subscriber_count = Integer.parseInt(jsonObject.getString("subscriber_count"));
+                            max_count = Integer.parseInt(jsonObject.getString("max_subscribers"));
                             if(jsonObject.getString("max_subscribers").equals(jsonObject.getString("subscriber_count")) && getIntent().getStringExtra("subscribeButton").equals("subscribe")){
                                 _subscribeButton.setEnabled(false);
                             }
