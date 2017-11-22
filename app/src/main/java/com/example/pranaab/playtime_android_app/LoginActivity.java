@@ -43,6 +43,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button _loginButton;
     private TextView _signupLink;
     private Context _context;
+    private RelativeLayout _loadingPanel;
 
     //private RequestQueue requestQueue;
     private String token;
@@ -56,13 +57,17 @@ public class LoginActivity extends AppCompatActivity {
         _passwordText = (EditText) findViewById(R.id.input_password);
         _loginButton = (Button) findViewById(R.id.btn_login);
         _signupLink = (TextView) findViewById(R.id.link_signup);
+        _loadingPanel = (RelativeLayout) findViewById(R.id.loadingPanel);
         _context = getApplicationContext();
+
 
 
         //Set login on click listener
         _loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                _loadingPanel.setVisibility(View.VISIBLE);
+                _loginButton.setEnabled(false);
                 Log.i("clicked login", "blah");
                 //final String basicAuthHeader = "Basic " + new String(Base64.encode("jiaqi:super_secret_123".getBytes(), Base64.DEFAULT));
                 String loginstring = _emailText.getText().toString() + ":" + _passwordText.getText().toString();
@@ -100,6 +105,7 @@ public class LoginActivity extends AppCompatActivity {
                                     service_intent.putExtra("user_uid", user_uid);
                                     startService(service_intent);
 
+                                    _loadingPanel.setVisibility(View.GONE);
                                     //Starting the activity
                                     Intent intent = new Intent(getApplicationContext(), ItemListActivity.class);
                                     startActivity(intent);
@@ -116,6 +122,8 @@ public class LoginActivity extends AppCompatActivity {
                                 // TODO Auto-generated method stub
                                 //goes here when the login fails
                                 Toasty.error(getApplicationContext(), "Login failed", Toast.LENGTH_SHORT, true).show();
+                                _loginButton.setEnabled(true);
+                                _loadingPanel.setVisibility(View.GONE);
                                 Log.d("ERROR","error => "+error.toString());
                             }
                         }
