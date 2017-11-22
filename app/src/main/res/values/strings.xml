@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">playtime_android_app</string>
+    <string name="app_name">PlayTime!</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>

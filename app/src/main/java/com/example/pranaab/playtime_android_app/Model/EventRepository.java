@@ -32,13 +32,13 @@ public class EventRepository {
     public static List<Event> events = new ArrayList<>();
     private Context applicationContext;
 
-    //View : for MVC design pattern
-    private RecyclerView.Adapter<ItemListActivity.SimpleItemRecyclerViewAdapter.ViewHolder> events_adapter;
+
+    private EventsLoadHandlerInterface eventsLoadHandler;
 
 
-    public EventRepository(Context context, RecyclerView.Adapter<ItemListActivity.SimpleItemRecyclerViewAdapter.ViewHolder> adptr) {
+    public EventRepository(Context context) {
         //events = new ArrayList<Event>();
-        events_adapter = adptr;
+        this.applicationContext = context;
     }
 
     public void fetch_Events_Async(SharedPreferences pref){
@@ -77,8 +77,9 @@ public class EventRepository {
                             }
 
                             //Update view again
-                            Log.i("NOTIFYSETCHANGED", getClass().toString());
-                            events_adapter.notifyDataSetChanged();
+                            eventsLoadHandler.refreshOnEventsLoad();
+
+
                         }
                         catch(Exception e){
                             Log.i("Excpetion Raised", e.getMessage());
@@ -103,6 +104,10 @@ public class EventRepository {
             }
         };
         RequestQueueSingleton.getInstance(applicationContext).addToRequestQueue(interestRequest);
+    }
+
+    public void setEventsLoadHandler(EventsLoadHandlerInterface evl){
+        this.eventsLoadHandler = evl;
     }
 
     public List<Event> getEvents() {

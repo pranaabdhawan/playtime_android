@@ -84,6 +84,7 @@ public class ItemDetailActivity extends AppCompatActivity {
                                             //Log.i("HEREEEEEE", subscriber_count.t);
                                             //Intent intent = new Intent(getApplicationContext(), ItemListActivity.class);
                                             //startActivity(intent);
+                                            finish();
 
                                     } catch (JSONException e) {
                                         e.printStackTrace();

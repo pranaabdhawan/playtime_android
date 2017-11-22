@@ -113,6 +113,7 @@ public abstract class ChatActivity
 
 
     protected void loadMessages() {
+        /*
         new Handler().postDelayed(new Runnable() { //imitation of internet connection
             @Override
             public void run() {
@@ -121,6 +122,7 @@ public abstract class ChatActivity
                 messagesAdapter.addToEnd(messages, false);
             }
         }, 1000);
+        */
     }
 
     private MessagesListAdapter.Formatter<Message> getMessageStringFormatter() {

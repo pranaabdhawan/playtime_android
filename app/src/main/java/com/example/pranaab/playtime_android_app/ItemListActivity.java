@@ -33,6 +33,7 @@ import com.example.pranaab.playtime_android_app.Chat.DefaultMessagesActivity;
 import com.example.pranaab.playtime_android_app.Model.DummyContent;
 import com.example.pranaab.playtime_android_app.Model.Event;
 import com.example.pranaab.playtime_android_app.Model.EventRepository;
+import com.example.pranaab.playtime_android_app.Model.EventsLoadHandlerInterface;
 import com.example.pranaab.playtime_android_app.Services.WebsocketService;
 import com.example.pranaab.playtime_android_app.WebSocket.ChatWebSocketListener;
 
@@ -61,7 +62,7 @@ import okhttp3.OkHttpClient;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class ItemListActivity extends AppCompatActivity {
+public class ItemListActivity extends AppCompatActivity implements EventsLoadHandlerInterface {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -75,12 +76,43 @@ public class ItemListActivity extends AppCompatActivity {
 
     private BroadcastReceiver receiver;
 
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+
+    private Boolean isMatched;
+
+    private View recyclerView;
+
+    public void refreshOnEventsLoad(){
+        Log.i("HERE","HEREEEEE");
+        events_adapter.notifyDataSetChanged();
+        mSwipeRefreshLayout.setRefreshing(false);
+        recyclerView.setVisibility(View.VISIBLE);
+    }
+
     @Override
     protected void onDestroy(){
         super.onDestroy();
         if(receiver != null) {
             Log.i("RECEIVER", "UNREGISTER");
             unregisterReceiver(receiver);
+        }
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        Log.i("ITEMLISTACTIVITY", "RESUMED");
+        if(!isMatched){
+            if(eventRepository == null){
+                Log.i("ITEMLISTACTIVITY", "Set event repository");
+                eventRepository = new EventRepository(getApplicationContext());
+                eventRepository.setEventsLoadHandler(this);
+            }
+            final SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0);
+
+            //Change this to loader!
+            recyclerView.setVisibility(View.GONE);
+            eventRepository.fetch_Events_Async(pref);
         }
     }
 
@@ -91,7 +123,7 @@ public class ItemListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_item_list);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        final SwipeRefreshLayout mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
 
         setSupportActionBar(toolbar);
         toolbar.setTitle("Events Around You");
@@ -108,55 +140,33 @@ public class ItemListActivity extends AppCompatActivity {
         });
 
 
-        View recyclerView = findViewById(R.id.item_list);
+        recyclerView = findViewById(R.id.item_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
 
-        // Make request to get event suggestions. TODO: Refactor into EventRepositoryClass
         final SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
-        eventRepository = new EventRepository(getApplicationContext(), events_adapter);     // Initially required only by this activity
-        eventRepository.fetch_Events_Async(pref);
+        //eventRepository = new EventRepository(getApplicationContext(), events_adapter);     // Initially required only by this activity
+        //eventRepository.fetch_Events_Async(pref);
+        isMatched = false;
 
 
         if (findViewById(R.id.item_detail_container) != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-w900dp).
-            // If this view is present, then the
-            // activity should be in two-pane mode.
             mTwoPane = true;
         }
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // Your code to refresh the list here.
-                // Make sure you call swipeContainer.setRefreshing(false)
-                // once the network request has completed successfully.
                 Log.i("Refreshing", "stay fresh");
                 eventRepository.fetch_Events_Async(pref);
-                mSwipeRefreshLayout.setRefreshing(false);
+                recyclerView.setVisibility(View.GONE);
+                mSwipeRefreshLayout.setRefreshing(true);
+                //mSwipeRefreshLayout.setEnabled( true );
             }
         });
 
-        Log.i("ACTIVE","i");
-
-
-        //DefaultMessagesActivity.open(this);
-
-        /*
-        OkHttpClient client = new OkHttpClient.Builder().pingInterval(10, TimeUnit.SECONDS).build();
-        okhttp3.Request request = new okhttp3.Request.Builder().url("ws://playtime-chat.herokuapp.com/connect?user_uid=31a06a13-8126-4720-8d8f-ae17930282c9").build();
-        ChatWebSocketListener listener = new ChatWebSocketListener();
-        WebSocket ws = client.newWebSocket(request, listener);
-
-        Integer milli = client.pingIntervalMillis();
-        Log.i("Webscoket", milli.toString());
-
-        client.dispatcher().executorService().shutdown();*/
-
         //Attaching the receiver
         if(receiver == null) {
-            Log.i("ITEMLIST", "Setting new receiver");
             receiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
@@ -164,13 +174,14 @@ public class ItemListActivity extends AppCompatActivity {
                     if(bundle!=null){
                         //See if something needs to be done
                     }
+                    isMatched = true;
                     Log.i("ServiceReceiver", "Got Service Receiver Intent");
                     Intent stopIntent = new Intent(getApplicationContext(), WebsocketService.class);
                     stopService(stopIntent);
 
+                    showEventMatchAlert();
 
-                    Intent activity_intent = new Intent(getApplicationContext(), DefaultMessagesActivity.class);
-                    startActivity(activity_intent);
+
                     //DefaultMessagesActivity.open(getApplicationContext());
 
                 }
@@ -181,10 +192,27 @@ public class ItemListActivity extends AppCompatActivity {
 
     }
 
+    private void showEventMatchAlert(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Congratulations! You have been matched!").setCancelable(
+                false).setPositiveButton("OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+
+                        Intent activity_intent = new Intent(getApplicationContext(), DefaultMessagesActivity.class);
+                        startActivity(activity_intent);
+
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+
+    }
+
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         events_adapter = new SimpleItemRecyclerViewAdapter(EventRepository.events);
         recyclerView.setAdapter(events_adapter);
-        //recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(eventRepository.getEvents()));
     }
 
     public class SimpleItemRecyclerViewAdapter
