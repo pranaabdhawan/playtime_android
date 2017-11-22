@@ -49,6 +49,12 @@ public class LoginActivity extends AppCompatActivity {
     private String token;
 
     @Override
+    protected void onResume(){
+        super.onResume();
+        _loginButton.setEnabled(true);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
