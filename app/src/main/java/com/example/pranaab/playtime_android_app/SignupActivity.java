@@ -171,6 +171,7 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                signup_button.setEnabled(false);
                 String postUserUrl = "https://playtime-core-api.herokuapp.com/api/users/";
                 HashMap<String, String> params = new HashMap<String, String>();
                 params.put("username", name_text.getText().toString());
@@ -228,6 +229,7 @@ public class SignupActivity extends AppCompatActivity {
                         } catch( JSONException e){
                             Toasty.error(getApplicationContext(), "Login Error", Toast.LENGTH_SHORT, true).show();
                         }
+                        signup_button.setEnabled(true);
                         VolleyLog.e("Error: ", error.getMessage());
                     }
                 }) {

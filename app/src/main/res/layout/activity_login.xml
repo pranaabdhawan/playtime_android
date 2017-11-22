@@ -40,6 +40,19 @@
                 android:hint="Password"/>
         </android.support.design.widget.TextInputLayout>
 
+        <RelativeLayout
+            android:id="@+id/loadingPanel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:indeterminate="true"/>
+        </RelativeLayout>
+
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/btn_login"
             android:layout_width="fill_parent"
