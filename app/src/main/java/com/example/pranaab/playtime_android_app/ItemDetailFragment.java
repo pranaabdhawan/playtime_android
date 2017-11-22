@@ -63,8 +63,11 @@ public class ItemDetailFragment extends Fragment {
 
         // Show the dummy content as text in a TextView.
         if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.item_detail_time)).setText("Time: " + "\n" + mItem.getStart_time() + " - " + mItem.getEnd_time());
-            ((TextView) rootView.findViewById(R.id.item_detail_location)).setText("Location: " + "\n" +  mItem.getLocation());
+            //((TextView) rootView.findViewById(R.id.item_detail)).setText(mItem.getDetails());
+            //((TextView) rootView.findViewById(R.id.item_detail_details_dynamic)).setText(mItem.getName());
+//            ((TextView) rootView.findViewById(R.id.item_detail_name)).setText(mItem.getName());
+            ((TextView) rootView.findViewById(R.id.item_detail_time)).setText("Time: " + mItem.getStart_time() + " - " + mItem.getEnd_time());
+            ((TextView) rootView.findViewById(R.id.item_detail_location)).setText("Location: " + mItem.getLocation());
             ((TextView) rootView.findViewById(R.id.item_detail_capacity)).setText("Number of People: " + mItem.getNum_joined_members() + "/" + mItem.getMax_subscribers());
             ((TextView) rootView.findViewById(R.id.item_detail_spots_left)).setText(Integer.toString(mItem.getMax_subscribers() - mItem.getNum_joined_members()) + " spots left!");
             ProgressBar simpleProgressBar = (ProgressBar) rootView.findViewById(R.id.indeterminateBar);
