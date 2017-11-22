@@ -49,7 +49,7 @@ public class EventRepository {
         final String tokenHeader = "Token " + pref.getString("currUser", null);
         Log.i("token", tokenHeader);
 
-        String interestsUrl = "https://playtime-core-api.herokuapp.com/api/recommendations";
+        String interestsUrl = "https://playtime-core-api.herokuapp.com/api/events";
         final StringRequest interestRequest = new StringRequest(Request.Method.GET, interestsUrl,
                 new Response.Listener<String>()
                 {
