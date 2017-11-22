@@ -1,5 +1,7 @@
 package com.example.pranaab.playtime_android_app.WebSocket;
 
+import android.content.SharedPreferences;
+
 import com.example.pranaab.playtime_android_app.Services.WebsocketService;
 
 /**
@@ -11,9 +13,9 @@ public class SingletonWebSocketListener {
 
     private SingletonWebSocketListener(){}
 
-    public static ChatWebSocketListener get_Instance(WebsocketService service, String user_uid){
+    public static ChatWebSocketListener get_Instance(WebsocketService service, String user_uid, SharedPreferences pref){
         if(listener == null){
-            listener = new ChatWebSocketListener(service, user_uid);
+            listener = new ChatWebSocketListener(service, user_uid, pref);
         }
         return listener;
     }

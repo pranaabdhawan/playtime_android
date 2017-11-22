@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -133,6 +134,12 @@ public class ItemListActivity extends AppCompatActivity implements EventsLoadHan
 
         setSupportActionBar(toolbar);
         toolbar.setTitle("Events Around You");
+
+        if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
+            Log.i("LIST","UI THREAD");
+        } else {
+            Log.i("LIST","NOT THE UI THREAD");
+        }
 
 
 

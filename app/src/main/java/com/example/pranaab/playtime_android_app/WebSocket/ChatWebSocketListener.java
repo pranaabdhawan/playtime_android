@@ -1,11 +1,16 @@
 package com.example.pranaab.playtime_android_app.WebSocket;
 
 import android.app.IntentService;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Looper;
 import android.os.Parcelable;
 import android.util.Log;
 
 import com.example.pranaab.playtime_android_app.Chat.ChatActivity;
 import com.example.pranaab.playtime_android_app.Chat.DefaultMessagesActivity;
+import com.example.pranaab.playtime_android_app.Chat.model.User;
+import com.example.pranaab.playtime_android_app.Chat.model.UserRepository;
 import com.example.pranaab.playtime_android_app.Services.WebsocketService;
 
 import org.json.JSONException;
@@ -36,9 +41,13 @@ import okio.ByteString;
 
         public DefaultMessagesActivity chatActivity;
 
-        public ChatWebSocketListener(WebsocketService service, String user_uid){
+        private UserRepository userRepository;
+
+
+        public ChatWebSocketListener(WebsocketService service, String user_uid, SharedPreferences pref){
             this.user_uid = user_uid;
             this.service = service;
+            this.userRepository = new UserRepository(this, pref);
         }
 
         public String cur_message;
@@ -54,6 +63,11 @@ import okio.ByteString;
         @Override
         public void onMessage(WebSocket webSocket, String text) {
             Log.i("WebSocketListener","Receiving : " + text);
+            if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
+                Log.i("OKOKOKOKK","UI THREAD");
+            } else {
+                Log.i("OKOKOKOKK","NOT THE UI THREAD");
+            }
             try {
                 JSONObject message = new JSONObject(text);
                 String type = message.getString("type");
@@ -65,18 +79,15 @@ import okio.ByteString;
                     case "EVENT_ACCEPT":        Log.i("WebSocketListener","Event Accept type : " + type);
                                                 break;
                     case "CHAT_MESSAGE":        Log.i("WebSocketListener","Chat message type : " + type);
+                                                String sender_uid = message.getString("sender");
                                                 String content = message.getString("content");
-                                                this.cur_message = content;
-                                                chatActivity.runOnUiThread(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        chatActivity.showReceivedText(cur_message);
-                                                        //stuff that updates ui
-
-                                                    }
-                                                });
-                                                //send_chat_message("Hello chat people!");
-                                                //send_chat_message("How are you today?");
+                                                boolean user_present = userRepository.getOrFetchUser(sender_uid);
+                                                if(user_present) { //Else get Or Fetch User would issue callback later.
+                                                    sendMessageToActivity(content,sender_uid);
+                                                }
+                                                else{
+                                                    userRepository.fetchUserAndUpdateUI(sender_uid, content); //would need to set late
+                                                }
                                                 break;
                     default: break;
                 }
@@ -86,8 +97,27 @@ import okio.ByteString;
 
         }
 
+        public void sendMessageToActivity(String message, String uid){
+            this.cur_message = message;
+            final String user_id = uid;
+            chatActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    User user = userRepository.getUser(user_id);
+                    chatActivity.showReceivedText(cur_message, user);
+                    //stuff that updates ui
+
+                }
+            });
+        }
+
         @Override
         public void onMessage(WebSocket webSocket, ByteString bytes) {
+            if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
+                Log.i("OKOKOKOKK","UI THREAD");
+            } else {
+                Log.i("OKOKOKOKK","NOT THE UI THREAD");
+            }
             Log.i("WebSocketListener","Receiving bytes : " + bytes.hex());
         }
         @Override
@@ -102,6 +132,11 @@ import okio.ByteString;
         }
 
         public void send_chat_message(String text){
+            if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
+                Log.i("OKOKOKOKK","UI THREAD");
+            } else {
+                Log.i("OKOKOKOKK","NOT THE UI THREAD");
+            }
             try {
                 JSONObject message = new JSONObject();
                 message.put("type", "CHAT_MESSAGE");

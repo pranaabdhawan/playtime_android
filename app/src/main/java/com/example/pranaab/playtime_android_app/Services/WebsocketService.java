@@ -3,6 +3,7 @@ package com.example.pranaab.playtime_android_app.Services;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.example.pranaab.playtime_android_app.WebSocket.ChatWebSocketListener;
@@ -64,7 +65,8 @@ public class WebsocketService extends IntentService {
         String user_uid = intent.getStringExtra("user_uid");
         OkHttpClient client = new OkHttpClient.Builder().pingInterval(10, TimeUnit.SECONDS).build();
         okhttp3.Request request = new okhttp3.Request.Builder().url("ws://playtime-chat.herokuapp.com/connect?user_uid=" + user_uid).build();
-        ChatWebSocketListener listener = SingletonWebSocketListener.get_Instance(this, user_uid);
+        final SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0);
+        ChatWebSocketListener listener = SingletonWebSocketListener.get_Instance(this, user_uid, pref);
         WebSocket ws = client.newWebSocket(request, listener);
 
         Integer milli = client.pingIntervalMillis();

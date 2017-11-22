@@ -3,11 +3,13 @@ package com.example.pranaab.playtime_android_app.Chat;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 
 import com.example.pranaab.playtime_android_app.Chat.fixtures.MessagesFixtures;
 import com.example.pranaab.playtime_android_app.Chat.model.Message;
+import com.example.pranaab.playtime_android_app.Chat.model.User;
 import com.example.pranaab.playtime_android_app.Chat.util.AppUtils;
 import com.example.pranaab.playtime_android_app.R;
 import com.example.pranaab.playtime_android_app.WebSocket.ChatWebSocketListener;
@@ -64,12 +66,18 @@ public class DefaultMessagesActivity extends ChatActivity
                 MessagesFixtures.getImageMessage(), true);
     }
 
-    public void showReceivedText(String text){
+    public void showReceivedText(String text, User user){
         //List<Message> messages = new ArrayList<>();
         //messages.add(MessagesFixtures.getMessageFromText(text));
         Log.i("ACTIVITY", "Here");
         //Log.i("ACTIVITY", messages.get(0).getText());
-        super.messagesAdapter.addToStart(MessagesFixtures.getReceiveTextMessage(text),true);
+
+        if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
+            Log.i("CHAT","UI THREAD");
+        } else {
+            Log.i("CHAT","NOT THE UI THREAD");
+        }
+        super.messagesAdapter.addToStart(MessagesFixtures.getReceiveTextMessage(text,user),true);
     }
 
     private void initAdapter() {

@@ -12,12 +12,21 @@ public class User implements IUser {
     private String name;
     private String avatar;
     private boolean online;
+    private String uid;
 
-    public User(String id, String name, String avatar, boolean online) {
+    public User(String id, String name, String url, boolean io) {
         this.id = id;
         this.name = name;
-        this.avatar = avatar;
-        this.online = online;
+        this.avatar = url;
+        this.online = true;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     @Override
@@ -34,6 +43,7 @@ public class User implements IUser {
     public String getAvatar() {
         return avatar;
     }
+
 
     public boolean isOnline() {
         return online;

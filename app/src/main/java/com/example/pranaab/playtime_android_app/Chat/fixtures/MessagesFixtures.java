@@ -80,6 +80,10 @@ public final class MessagesFixtures extends FixturesData {
     public static Message getReceiveTextMessage(String text){
         return new Message(getRandomId(), getAwayUser(), text);
     }
+
+    public static Message getReceiveTextMessage(String text, User user){
+        return new Message(getRandomId(), user, text);
+    }
     public static Message getSendTextMessage(String text){
         return new Message(getRandomId(), getOwnerUser(), text);
     }

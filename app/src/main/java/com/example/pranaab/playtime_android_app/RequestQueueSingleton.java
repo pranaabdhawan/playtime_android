@@ -27,6 +27,10 @@ public class RequestQueueSingleton {
         return mInstance;
     }
 
+    public static synchronized RequestQueueSingleton getInstanceIfExists(){
+        return mInstance;
+    }
+
     public RequestQueue getRequestQueue(){
         // If RequestQueue is null the initialize new RequestQueue
         if(mRequestQueue == null){

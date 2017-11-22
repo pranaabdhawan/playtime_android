@@ -45,15 +45,14 @@ public abstract class ChatActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        /*
+        
         imageLoader = new ImageLoader() {
             @Override
             public void loadImage(ImageView imageView, String url) {
                 Picasso.with(ChatActivity.this).load(url).into(imageView);
             }
         };
-        */
+
     }
 
     @Override
