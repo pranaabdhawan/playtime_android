@@ -1,5 +1,6 @@
 package com.example.pranaab.playtime_android_app;
 
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
@@ -82,10 +84,13 @@ public class ItemListActivity extends AppCompatActivity implements EventsLoadHan
 
     private View recyclerView;
 
+    private ProgressBar progressBar;
+
     public void refreshOnEventsLoad(){
         Log.i("HERE","HEREEEEE");
         events_adapter.notifyDataSetChanged();
         mSwipeRefreshLayout.setRefreshing(false);
+        progressBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
     }
 
@@ -112,6 +117,7 @@ public class ItemListActivity extends AppCompatActivity implements EventsLoadHan
 
             //Change this to loader!
             recyclerView.setVisibility(View.GONE);
+            progressBar.setVisibility(View.VISIBLE);
             eventRepository.fetch_Events_Async(pref);
         }
     }
@@ -139,7 +145,7 @@ public class ItemListActivity extends AppCompatActivity implements EventsLoadHan
             }
         });
 
-
+        progressBar = (ProgressBar) findViewById(R.id.progressBarEvents);
         recyclerView = findViewById(R.id.item_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);

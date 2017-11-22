@@ -80,10 +80,6 @@ public class ItemDetailActivity extends AppCompatActivity {
                                     try {
                                         Toasty.success(getApplicationContext(), "Successful Subscription!", Toast.LENGTH_SHORT, true).show();
                                         VolleyLog.v("Subscription Response:%n %s", response.toString(4));
-
-                                            //Log.i("HEREEEEEE", subscriber_count.t);
-                                            //Intent intent = new Intent(getApplicationContext(), ItemListActivity.class);
-                                            //startActivity(intent);
                                             finish();
 
                                     } catch (JSONException e) {
@@ -130,8 +126,7 @@ public class ItemDetailActivity extends AppCompatActivity {
                                     try {
                                         Toasty.success(getApplicationContext(), "Successfully Unsubscribed!", Toast.LENGTH_SHORT, true).show();
                                         Log.d("Unsubscribe Response", response);
-                                        Intent intent = new Intent(getApplicationContext(), ItemListActivity.class);
-                                        startActivity(intent);
+                                        finish();
                                     }
                                     catch(Exception e){
                                         Log.i("Excpetion Raised", e.getMessage());
