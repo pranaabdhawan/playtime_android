@@ -43,7 +43,6 @@ public class LoginActivity extends AppCompatActivity {
     private Button _loginButton;
     private TextView _signupLink;
     private Context _context;
-    private RelativeLayout _loadingPanel;
 
     //private RequestQueue requestQueue;
     private String token;
@@ -57,7 +56,6 @@ public class LoginActivity extends AppCompatActivity {
         _passwordText = (EditText) findViewById(R.id.input_password);
         _loginButton = (Button) findViewById(R.id.btn_login);
         _signupLink = (TextView) findViewById(R.id.link_signup);
-        _loadingPanel = (RelativeLayout) findViewById(R.id.loadingPanel);
         _context = getApplicationContext();
 
 
@@ -65,7 +63,6 @@ public class LoginActivity extends AppCompatActivity {
         _loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                _loadingPanel.setVisibility(View.VISIBLE);
                 Log.i("clicked login", "blah");
                 //final String basicAuthHeader = "Basic " + new String(Base64.encode("jiaqi:super_secret_123".getBytes(), Base64.DEFAULT));
                 String loginstring = _emailText.getText().toString() + ":" + _passwordText.getText().toString();
@@ -102,8 +99,6 @@ public class LoginActivity extends AppCompatActivity {
                                     Intent service_intent = new Intent(getApplicationContext(), WebsocketService.class);
                                     service_intent.putExtra("user_uid", user_uid);
                                     startService(service_intent);
-
-                                    _loadingPanel.setVisibility(View.GONE);
 
                                     //Starting the activity
                                     Intent intent = new Intent(getApplicationContext(), ItemListActivity.class);
